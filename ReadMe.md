@@ -66,6 +66,10 @@ Available everywhere either original or cloned. I bought a clone, it was less th
 The heart of this project is the software that runs everything. Doing this with regular IC's would mean a circuit board and 40 or 50 chips. Now you have the choice of writing the sketch yourself for your set or you can use the sketch I wrote. 
 There are unlimited options with the Arduino to improve, expand and employ it to many other radios besides just the RF-550. There were many military based sets from the early 80's that employed pushbutton, decade switches, or other programming methods to select frequency.
 
+To install the software, firstly download the whole repository and install [Arduino IDE](https://www.arduino.cc/en/software).
+Connect Arduino to your PC.
+Then, open the sketch **VFOTuner.ino** using the IDE, select the appropriate COM port and click **Upload** button.
+
 ## Construction
 
 If you are with me so far and decide to use the pin assignment I did you will wire the radio to the Arduino in the following manner:
