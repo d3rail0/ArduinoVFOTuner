@@ -68,7 +68,7 @@ There are unlimited options with the Arduino to improve, expand and employ it to
 
 To install the software, firstly download the whole repository and install [Arduino IDE](https://www.arduino.cc/en/software).
 Connect Arduino to your PC.
-Then, open the sketch **VFOTuner.ino** using the IDE, select the appropriate COM port and click **Upload** button.
+Lastly, open sketch **VFOTuner.ino** using the IDE, select an appropriate COM port and click **Upload** button.
 
 ## Construction
 
