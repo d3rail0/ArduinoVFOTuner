@@ -41,19 +41,25 @@ Pretty much open on this one. I opted for something I had lying around. It was a
 
 Find a nice smooth encoder with 100-200 pulse per revolution. This gives a nice analog feel to the tuner. If its too touchy you can turn down the p/r in software to get anything you like. The encoders generally have a wide operating voltage 5-20 volts and are readilly available on ebay for $20.00 or less. I bought an Omron unit but probably anything of quality will do. The encoder needs four lines, 12 volt, GRD, A and B. No reason you could not try one of those click tune encoders, that might be fun too.
 
-[![100 PPR Encoder](100 PPR Encoder "100 PPR Encoder")](./images/re100p.jpg "100 PPR Encoder")
+<p align="center">
+    <img alt="100 PPR Encoder" src="./images/re100p.jpg" width=50% height=50%>
+</p>
 
 ## Cable
 
 I had a bit of trouble with this one. I ordered a Centronics cable on ebay and I 'assumed' each of the 36 pins would be wired to the corresponding pin on the opposite end. WRONG. The actual Centronics printer only used abut 25 pins and this required me rewiring the cable. I might add at this point one of the greatest difficulties I had was in doing the fine wiring and cabling between the Arduino and the radio. Less than perfect eyesight and hand shake makes it a challenge! In any event you are going to need a cable with 22 wires plus ground going from your radio to the Arduino. The Arduino uses header pins, readilly available. You can cable it up anyway you want, as long as there are no opens and no shorts. I think I paid about 20 buck for the cable.
 
-[![Centronics cable](Centronics cable "Centronics cable")](./images/centronics_cable.jpg "Centronics cable")
+<p align="center">
+    <img alt="Centronics cable" src="./images/centronics_cable.jpg" width=50% height=50%>
+</p>
 
 ## Arduino MEGA
 
 Available everywhere either original or cloned. I bought a clone, it was less than $30.00
 
-[![Arduino MEGA](Arduino MEGA "Arduino MEGA")](./images/arduinomega.jpg "Arduino MEGA")
+<p align="center">
+    <img alt="Arduino MEGA" src="./images/arduinomega.jpg" width=50% height=50%>
+</p>
 
 ## Software
 
@@ -100,18 +106,20 @@ If you are with me so far and decide to use the pin assignment I did you will wi
 **SPEED CONTROL**
 - Connect a switch to **PIN 12** on Arduino
 
-Arduino used pins visualized:
+<p align="center">
+    <img alt="Arduino MEGA Pinout" src="./images/Arduino-Mega-2560-Pinout.jpg" width=80% height=80%>
+</p>
 
-[![Arduino MEGA Pinout](Arduino MEGA Pinout "Arduino MEGA Pinout")](./images/Arduino-Mega-2560-Pinout.jpg "Arduino MEGA Pinout")
+**Pin outs for Centronics cable:**
 
-Pin outs for Centronics cable:
-
-[![Centronics cable pinout](Centronics cable pinout "Centronics cable pinout")](./images/centronics_pins.png "Centronics cable pinout")
+<p align="center">
+    <img alt="Centronics cable pinout" src="./images/centronics_pins.png" width=80% height=80%>
+</p>
 
 ## CONCLUSION
 
-That is about it. Once you have the radio cabled to the Arduino you should be good to go. The RF-550 has two remote positions one for frequency only (how nice is that!). The whole operation cost me about 100. Considering it changes the radio into a whole new set, I would suggest anyone with one of these radios undertake. Good luck with it!
+That is about it. Once you have the radio cabled to the Arduino you should be good to go. The RF-550 has two remote positions one for frequency only (how nice is that!). Considering it changes the radio into a whole new set, I would suggest anyone with one of these radios undertake. Good luck with it!
 
 You can check it performing here (YouTube):
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/OmHf1IeVA7g/0.jpg)](https://www.youtube.com/watch?v=OmHf1IeVA7g)
+[![Youtube link](https://img.youtube.com/vi/OmHf1IeVA7g/0.jpg)](https://www.youtube.com/watch?v=OmHf1IeVA7g)
