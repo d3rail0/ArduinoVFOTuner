@@ -90,7 +90,7 @@ If you are with me so far and decide to use the pin assignment I did you will wi
 | 12 | 33  | 2  |
 | 13 | 34  |  4 |
 | 14 | 35  | 8  |
-| 15 | 36  | 1 kHZ-1  |
+| 15 | 36  | 1 kHz-1  |
 | 16 | 37  | 2  |
 | 17 | 38  | 4  |
 | 18 | 39  | 8  |
@@ -101,14 +101,18 @@ If you are with me so far and decide to use the pin assignment I did you will wi
 | GND | GND  |   |
 
 **ROTARY ENCODER**
-- Connect Output **A** to **PIN 3** on Arduino
-- Connect Output **B** to **PIN 2** on Arduino
+- Connect Output **A** to  **PIN 3** on Arduino.
+- Connect Output **B** to **PIN 2** on Arduino.
+- You do not need any connection with the **Index** pin on your encoder.
 
 **DIGIT CHANGE**
-- Connect a switch to **PIN 17** on Arduino
+- Arduino **PIN 17** - should be connected to a **push-button** which changes the frequency step size when the nob on the encoder is rotated.
 
 **SPEED CONTROL**
-- Connect a switch to **PIN 12** on Arduino
+- Arduino **PIN 12** - should be connected to a **toggle button** that will enable/disable speed mode for the tuner. Essentially, with the speed mode enabled the frequency will change twice as fast when the encoder nob is rotated.
+
+**SAVE TUNER STATE**
+- Arduino **PIN 11** - should be connected to a **push-button** that saves the current tuner state to the *EEPROM*. This state will be loaded on Arduino restart.
 
 <p align="center">
     <img alt="Arduino MEGA Pinout" src="./images/Arduino-Mega-2560-Pinout.jpg" width=80% height=80%>
@@ -126,4 +130,7 @@ That is about it. Once you have the radio cabled to the Arduino you should be go
 
 You can check it performing here (YouTube):
 
-[![Youtube link](https://img.youtube.com/vi/OmHf1IeVA7g/0.jpg)](https://www.youtube.com/watch?v=OmHf1IeVA7g)
+<p align="center">
+    [![Youtube link](https://img.youtube.com/vi/OmHf1IeVA7g/0.jpg)](https://www.youtube.com/watch?v=OmHf1IeVA7g)
+</p>
+
