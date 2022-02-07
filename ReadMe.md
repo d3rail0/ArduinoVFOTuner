@@ -130,7 +130,6 @@ That is about it. Once you have the radio cabled to the Arduino you should be go
 
 You can check it performing here (YouTube):
 
-<p align="center">
-    [![Youtube link](https://img.youtube.com/vi/OmHf1IeVA7g/0.jpg)](https://www.youtube.com/watch?v=OmHf1IeVA7g)
-</p>
+
+[![Youtube link](https://img.youtube.com/vi/OmHf1IeVA7g/0.jpg)](https://www.youtube.com/watch?v=OmHf1IeVA7g)
 
