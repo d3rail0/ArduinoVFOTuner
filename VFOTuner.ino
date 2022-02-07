@@ -3,13 +3,16 @@
     Arduino VFO Tuner for Harris RF-550
 
     Author: d3rail0
-    Tester: Keith Densmore
+    
+	Testers:
+		Keith Densmore
+		Bryan Kim
 
     Completion date: Sunday the 5th of November, 2017 
 
 */
 
-#include "src/Helper.h"
+#include "src/bconverter.h"
 
 #define encoder0PinA 3
 #define encoder0PinB 2
@@ -42,8 +45,7 @@ long diff = 200;
 void readEncoder();
 void tuneFrequency(bool up);
 
-Helper 	helper;
-long 	bcdNum;
+long bcdNum;
 
 void setup()
 {
@@ -95,7 +97,7 @@ void loop()
 
 	tuneSwitchPrevState = tuneSwitchReading;
 
-	bcdNum = helper.ConvertToBCD(frequency / 100);
+	bcdNum = BCDConverter::ConvertToBCD_M(frequency / 100);
 
 	//DEBUGGING ---------------|
 	//Serial.println("");
@@ -105,14 +107,14 @@ void loop()
 	//-------------------------|
 
 	for (int i = 21; i >= 0; i--)
-		digitalWrite(22 + i, (bcdNum >> i) & 1);
+		digitalWrite(43 - i, (bcdNum >> i) & 1);
 }
 
 void tuneFrequency(bool up)
 {
 
-	double multiplier = (FAST_MODE == false) / 2;
-	if (abs(multiplier) < EPSILON)
+	double multiplier = 0.5;
+	if (FAST_MODE) 
 		multiplier = 1.0;
 
 	frequency += (tuneAmount * multiplier) * (up ? 1 : -1);
