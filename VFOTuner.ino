@@ -71,8 +71,6 @@ void loadState() {
 
 	for(short i=0; i<4; i++) 
 		temp[i] = EEPROM.read(i);
-	
-	temp[5] = '\0';
 
 	if(strcmp(temp, "data") == 0) {
 		// Read freq and tuneSpeed from memory
