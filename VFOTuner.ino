@@ -166,18 +166,7 @@ void loop()
 	}
 
 	tuneSwitchPrevState = tuneSwitchReading;
-
-	bcdNum = BCDConverter::ConvertToBCD_M(frequency / 100);
-
-	//DEBUGGING ---------------|
-	//Serial.println("");
-	//Serial.print(frequency);
-	//Serial.print(" >> ");
-	//Serial.println(bcdNum);
-	//-------------------------|
-
-	for (int i = 21; i >= 0; i--)
-		digitalWrite(43 - i, (bcdNum >> i) & 1);
+	
 }
 
 boolean debounceButton(int buttonPin, boolean oldState)
@@ -189,6 +178,20 @@ boolean debounceButton(int buttonPin, boolean oldState)
 		stateNow = digitalRead(buttonPin);
 	}
 	return stateNow;
+}
+
+void UpdateFrequency() {
+	bcdNum = BCDConverter::ConvertToBCD_M(frequency / 100);
+
+	//DEBUGGING ---------------|
+	//Serial.println("");
+	//Serial.print(frequency);
+	//Serial.print(" >> ");
+	//Serial.println(bcdNum);
+	//-------------------------|
+
+	for (int i = 21; i >= 0; i--)
+		digitalWrite(43 - i, (bcdNum >> i) & 1);
 }
 
 void tuneFrequency(bool up)
@@ -225,4 +228,6 @@ void readEncoder() {
     	tuneFrequency(false);
 	else 
     	tuneFrequency(true);
+
+	UpdateFrequency();
 }
