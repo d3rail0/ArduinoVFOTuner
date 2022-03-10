@@ -3,9 +3,9 @@
 
 #include <stdint.h>
 
-namespace BCDConverter {
+namespace bcv {
     unsigned char reverse(unsigned char b);
-    long ConvertToBCD_M(long num);
+    long mConvertToBCD(long num);
 }
 
 #endif

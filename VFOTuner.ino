@@ -15,14 +15,14 @@
 #include "src/bconverter.h"
 #include <EEPROM.h>
 
-#define encoder0PinA 3
-#define encoder0PinB 2
+const double EPSILON = 0.0001;
 
-#define SAVE_STATE_BUTTON 11
-#define SPEED_BUTON 12
-#define TUNE_SWITCH 17
+const int encoder0PinA = 3;
+const int encoder0PinB = 2;
 
-#define EPSILON 0.0001
+const int SAVE_STATE_BUTTON = 11;
+const int SPEED_BUTON       = 12;
+const int TUNE_SWITCH       = 17;
 
 //Rotary encoder
 volatile int encoder0Pos = 0;
@@ -36,28 +36,26 @@ int state               = HIGH;
 int tuneSwitchReading;
 
 //Tune frequency
-long frequency  = 7000000;
-long tuneAmount = 100;
-bool FAST_MODE  = false;
+unsigned long frequency  = 7000000;
+unsigned long tuneAmount = 100;
 
 //Tune speeds
-short tuneSpeed_ID = 0;
-const unsigned long tune_speeds[4] = {100, 1000, 10000, 100000};
+bool  FAST_MODE   = false;
+short tuneSpeedID = 0;
+const unsigned long tuneSpeeds[4] = {100, 1000, 10000, 100000};
 
-long timer;
-long diff = 200;
+unsigned long timer;
+const short diff = 200;
+long bcdNum;
 
-// Forward declare functions
 void readEncoder();
 void tuneFrequency(bool up);
-boolean debounceButton(int buttonPin, boolean oldState);
-
-long bcdNum;
+bool debounceButton(int buttonPin, bool oldState);
 
 // Save current tuner state to EEPROM
 void saveState() {
 	EEPROM.put(4*sizeof(char), frequency);
-	EEPROM.put(4*sizeof(char) + sizeof(long), tuneSpeed_ID);
+	EEPROM.put(4*sizeof(char) + sizeof(long), tuneSpeedID);
 	Serial.println("State saved!");
 }
 
@@ -75,15 +73,15 @@ void loadState() {
 	if(strcmp(temp, "data") == 0) {
 		// Read freq and tuneSpeed from memory
 		EEPROM.get(4*sizeof(char), frequency);
-		EEPROM.get(4*sizeof(char) + sizeof(long), tuneSpeed_ID);
+		EEPROM.get(4*sizeof(char) + sizeof(long), tuneSpeedID);
 
-		if (tuneSpeed_ID<0 || tuneSpeed_ID>3) {
+		if (tuneSpeedID<0 || tuneSpeedID>3) {
 			Serial.println("Incorrect tuneSpeed_ID reading from EEPROM.");
-			tuneSpeed_ID = 0;
-			frequency    = 100;
+			tuneSpeedID = 0;
+			frequency   = 100;
 		}
 
-		tuneAmount = tune_speeds[tuneSpeed_ID];
+		tuneAmount = tuneSpeeds[tuneSpeedID];
 
 		Serial.println("Tuner state loaded from EEPROM:");
 		Serial.print("frequency = ");
@@ -157,8 +155,8 @@ void loop()
 
 		if (state == LOW)
 		{
-			tuneSpeed_ID = (tuneSpeed_ID + 1) % 4;
-			tuneAmount = tune_speeds[tuneSpeed_ID];
+			tuneSpeedID = (tuneSpeedID + 1) % 4;
+			tuneAmount = tuneSpeeds[tuneSpeedID];
 		}
 
 		tuneSwitchReading = !state;
@@ -169,9 +167,9 @@ void loop()
 	
 }
 
-boolean debounceButton(int buttonPin, boolean oldState)
+bool debounceButton(int buttonPin, bool oldState)
 {
-	boolean stateNow = digitalRead(buttonPin);
+	bool stateNow = digitalRead(buttonPin);
 	if(oldState!=stateNow)
 	{
 		delay(10);
@@ -180,8 +178,8 @@ boolean debounceButton(int buttonPin, boolean oldState)
 	return stateNow;
 }
 
-void UpdateFrequency() {
-	bcdNum = BCDConverter::ConvertToBCD_M(frequency / 100);
+void updateFrequency() {
+	bcdNum = bcv::mConvertToBCD(frequency / 100);
 
 	//DEBUGGING ---------------|
 	//Serial.println("");
@@ -229,5 +227,5 @@ void readEncoder() {
 	else 
     	tuneFrequency(true);
 
-	UpdateFrequency();
+	updateFrequency();
 }

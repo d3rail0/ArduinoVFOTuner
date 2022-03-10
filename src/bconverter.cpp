@@ -1,6 +1,6 @@
 #include "bconverter.h"
 
-namespace BCDConverter {
+namespace bcv {
 
     // Reverse bits in a nibble
     unsigned char reverse(unsigned char b) {
@@ -9,15 +9,24 @@ namespace BCDConverter {
         return b;
     }
 
-    long ConvertToBCD_M(long num) {
+    /*
+        Converts 'num' to 22-bit BCD.
+        
+        First 20 LSB are BCD equivalent for last 5 digits in a number. 
+        Every nibble has its bits reversed.
+        
+        4 MSB are also reversed and only 2 MSB are shifted to the right
+        so that it fits the 22-bit output.
+    */
+    long mConvertToBCD(long num) {
         long res      = 0;
         long reversed = 0;
 
-        uint8_t zeros_offset = 0; 
+        uint8_t zerosOffset = 0; 
 
         // Count suffix zeros
         while(num && num%10==0) {
-            zeros_offset++;
+            zerosOffset++;
             num/=10;
         }
 
@@ -34,11 +43,11 @@ namespace BCDConverter {
             reversed /= 10;
         }
 
-        while(zeros_offset--) 
+        while(zerosOffset--) 
             res <<= 4;
         
         // Shift 10 MHz bits to the right
-        return res | (res & 12582912) >> 2;
+        return res | (res & 0xC00000) >> 2;
     }
 
 }
