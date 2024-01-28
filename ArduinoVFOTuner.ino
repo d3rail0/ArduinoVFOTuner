@@ -30,6 +30,8 @@ const long MIN_FREQUENCY          = 0;         // Minimum frequency limit
 const double STANDARD_MULTIPLIER  = 1.0;
 const double FAST_MULTIPLIER      = 0.5;
 
+const char EEPROM_SIGNATURE[] = "dat1";  // Constant for EEPROM signature
+
 struct TunerState {
     char signature[5];  // A signature to check if valid data is stored
     long frequency;
@@ -63,7 +65,7 @@ bool debounceButton(int buttonPin, bool oldState);
 
 // Initialize the tuner state
 void initState() {
-    strcpy(tunerState.signature, "data");
+    strcpy(tunerState.signature, EEPROM_SIGNATURE);
     tunerState.frequency = 7000000;
     tunerState.tuneSpeedID = 0;
 }
@@ -79,7 +81,7 @@ void loadState() {
 
 	EEPROM.get(0, tunerState);
 
-	if (strcmp(tunerState.signature, "data") == 0) {
+	if (strcmp(tunerState.signature, EEPROM_SIGNATURE) == 0) {
 
 		// Check if the tuneSpeedID is within a valid range
         if (tunerState.tuneSpeedID < 0 || tunerState.tuneSpeedID > 3) {
