@@ -24,6 +24,18 @@ const int SAVE_STATE_BUTTON = 11;
 const int SPEED_BUTON       = 12;
 const int TUNE_SWITCH       = 17;
 
+// Radio Configuration
+const long MAX_FREQUENCY          = 30000000;  // Maximum frequency limit
+const long MIN_FREQUENCY          = 0;         // Minimum frequency limit
+const double STANDARD_MULTIPLIER  = 1.0;
+const double FAST_MULTIPLIER      = 0.5;
+
+struct TunerState {
+    char signature[5];  // A signature to check if valid data is stored
+    long frequency;
+    short tuneSpeedID;
+};
+
 //Rotary encoder
 volatile int encoder0Pos = 0;
 
@@ -35,77 +47,64 @@ int tuneSwitchPrevState = LOW;
 int state               = HIGH;
 int tuneSwitchReading;
 
-//Tune frequency
-unsigned long frequency  = 7000000;
-unsigned long tuneAmount = 100;
-
 //Tune speeds
-bool  FAST_MODE   = false;
-short tuneSpeedID = 0;
+TunerState tunerState;
+bool FAST_MODE = false;
+unsigned long tuneAmount = 100;
 const unsigned long tuneSpeeds[4] = {100, 1000, 10000, 100000};
 
+long bcdNum;
 unsigned long timer;
 const short diff = 200;
-long bcdNum;
 
 void readEncoder();
 void tuneFrequency(bool up);
 bool debounceButton(int buttonPin, bool oldState);
 
+// Initialize the tuner state
+void initState() {
+    strcpy(tunerState.signature, "data");
+    tunerState.frequency = 7000000;
+    tunerState.tuneSpeedID = 0;
+}
+
 // Save current tuner state to EEPROM
 void saveState() {
-	EEPROM.put(4*sizeof(char), frequency);
-	EEPROM.put(4*sizeof(char) + sizeof(long), tuneSpeedID);
+	EEPROM.put(0, tunerState);
 	Serial.println("State saved!");
 }
 
 // Load last tuner state from EEPROM
 void loadState() {
-	// EEPROM:
-	// char[4], long	 , short
-	// temp   , frequency, tuneSpeed_ID
 
-	char temp[5] = {0};
+	EEPROM.get(0, tunerState);
 
-	for(short i=0; i<4; i++) 
-		temp[i] = EEPROM.read(i);
+	if (strcmp(tunerState.signature, "data") == 0) {
 
-	if(strcmp(temp, "data") == 0) {
-		// Read freq and tuneSpeed from memory
-		EEPROM.get(4*sizeof(char), frequency);
-		EEPROM.get(4*sizeof(char) + sizeof(long), tuneSpeedID);
+		// Check if the tuneSpeedID is within a valid range
+        if (tunerState.tuneSpeedID < 0 || tunerState.tuneSpeedID > 3) {
+            Serial.println("Incorrect tuneSpeedID reading from EEPROM.");
+            initState();  // Reset to initial state
+        }
 
-		if (tuneSpeedID<0 || tuneSpeedID>3) {
-			Serial.println("Incorrect tuneSpeed_ID reading from EEPROM.");
-			tuneSpeedID = 0;
-			frequency   = 100;
-		}
-
-		tuneAmount = tuneSpeeds[tuneSpeedID];
+		tuneAmount = tuneSpeeds[tunerState.tuneSpeedID];
 
 		Serial.println("Tuner state loaded from EEPROM:");
 		Serial.print("frequency = ");
-		Serial.println(frequency);
+		Serial.println(tunerState.frequency);
 		Serial.print("tuneAmount = ");
 		Serial.println(tuneAmount);
 
 	} else {
-		// Set default values 
-		EEPROM.put(0*sizeof(char), 'd');
-		EEPROM.put(1*sizeof(char), 'a');
-		EEPROM.put(2*sizeof(char), 't');
-		EEPROM.put(3*sizeof(char), 'a');
-
-		saveState();
-
-		Serial.println("Default tuner state saved to EEPROM.");
+		// Set default values and save them
+        initState();
+        saveState();
+        Serial.println("Default tuner state saved to EEPROM.");
 	}
 
 }
 
-void setup()
-{
-
+void setup() {
 	// Configure input pins
 	pinMode(encoder0PinA, INPUT);
 	pinMode(encoder0PinB, INPUT);
@@ -129,11 +128,9 @@ void setup()
 	Serial.println("start");
 
 	loadState();
-	
 }
 
-void loop()
-{
+void loop() {
 
 	// Update state if button is active
 	buttonSaveState = debounceButton(SAVE_STATE_BUTTON, oldButtonSaveState);
@@ -153,10 +150,9 @@ void loop()
 
 		state = !state;
 
-		if (state == LOW)
-		{
-			tuneSpeedID = (tuneSpeedID + 1) % 4;
-			tuneAmount = tuneSpeeds[tuneSpeedID];
+		if (state == LOW) {
+			tunerState.tuneSpeedID = (tunerState.tuneSpeedID + 1) % 4;
+			tuneAmount = tuneSpeeds[tunerState.tuneSpeedID];
 		}
 
 		tuneSwitchReading = !state;
@@ -167,11 +163,9 @@ void loop()
 	
 }
 
-bool debounceButton(int buttonPin, bool oldState)
-{
+bool debounceButton(int buttonPin, bool oldState) {
 	bool stateNow = digitalRead(buttonPin);
-	if(oldState!=stateNow)
-	{
+	if(oldState!=stateNow) {
 		delay(10);
 		stateNow = digitalRead(buttonPin);
 	}
@@ -179,7 +173,7 @@ bool debounceButton(int buttonPin, bool oldState)
 }
 
 void updateFrequency() {
-	bcdNum = bcv::mConvertToBCD(frequency / 100);
+	bcdNum = bcv::mConvertToBCD(tunerState.frequency / 100);
 
 	//DEBUGGING ---------------|
 	//Serial.println("");
@@ -192,40 +186,37 @@ void updateFrequency() {
 		digitalWrite(43 - i, (bcdNum >> i) & 1);
 }
 
-void tuneFrequency(bool up)
-{
+void tuneFrequency(bool up) {
+	double multiplier = (FAST_MODE) ? FAST_MULTIPLIER : STANDARD_MULTIPLIER;
+	long frequencyChange = static_cast<long>(tuneAmount * multiplier) * (up ? 1 : -1);
+    tunerState.frequency += frequencyChange;
 
-	double multiplier = 0.5;
-	if (FAST_MODE) 
-		multiplier = 1.0;
+    if (tuneAmount == 1000) {
+        tunerState.frequency -= (tunerState.frequency % 1000);
+    } else if (tuneAmount == 10000) {
+        tunerState.frequency -= (tunerState.frequency % 10000) - (tunerState.frequency % 1000);
+    }
 
-	frequency += (tuneAmount * multiplier) * (up ? 1 : -1);
-
-	if (tuneAmount == 1000)
-		frequency -= (frequency % 1000);
-	else if (tuneAmount == 10000)
-	{
-		frequency -= (frequency % 10000);
-		frequency -= (frequency % 1000);
-	}
-	
-	//Handle edge frequencies
-	if (frequency < 0)
+    // Handle edge frequencies
+    if (tunerState.frequency < MIN_FREQUENCY) {
 		/*
-			Change to frequency=30000000 if you want 
-			the frequency to go from 0 to 30MHz when 
-			RF gets to below 0
+			Change to frequency=MAX_FREQUENCY if you want 
+			the frequency to go from MIN_FREQUENCY to MAX_FREQUENCY when 
+			RF goes below MIN_FREQUENCY
 		*/
-		frequency = 0; 
-	if (frequency > 30000000)
-		frequency = 0;
+        tunerState.frequency = MIN_FREQUENCY;
+    } else if (tunerState.frequency > MAX_FREQUENCY) {
+        tunerState.frequency = MIN_FREQUENCY;
+    }
 }
 
 void readEncoder() {
-  	if (digitalRead(encoder0PinA) == digitalRead(encoder0PinB))
+  	if (digitalRead(encoder0PinA) == digitalRead(encoder0PinB)) {
     	tuneFrequency(false);
-	else 
+	}
+	else {
     	tuneFrequency(true);
+	}
 
 	updateFrequency();
 }
